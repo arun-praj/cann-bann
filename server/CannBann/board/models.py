@@ -7,6 +7,7 @@ class Board(AbstractTimeStamp):
     board_name = models.CharField(max_length=256)
     board_admins = models.ManyToManyField(User, related_name='board_admins')
     board_members = models.ManyToManyField(User,related_name='board_members')
+    backkgroundColor = models.CharField(max_length=62)
 
     class Meta:
         db_table = "boards" #the name of database table to use
