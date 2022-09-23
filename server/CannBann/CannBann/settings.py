@@ -12,17 +12,25 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 import environ
-env = environ.Env()
-environ.Env.read_env()
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+import os
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False)
+)
+# BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = Path(__file__).resolve().parent.parent
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
 
 
+# print( env('SECRET_KEY'))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-#+ez8&$5m9$yu1&a)7i2ex3d=u9a)%a-af^ygv@nz0yreh!xce'
+
+SECRET_KEY = env('SECRET_KEY')
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -39,24 +47,35 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "corsheaders",
+    'rest_framework',
+    'drf_yasg',
     
     #apps
     'board',
     'column',
     'story',
+    'userprofile',
     #3rd packages
-    'rest_framework',
 ]
 
+
 MIDDLEWARE = [
+   
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
 ]
+
+CORS_ALLOWED_ORIGINS=['http://localhost:3000']
+# APPEND_SLASH=False
 
 ROOT_URLCONF = 'CannBann.urls'
 
@@ -78,9 +97,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'CannBann.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
 # 'default': {
@@ -142,9 +158,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES':[
-        'rest_framework.permissions.IsAuthenticated'
+        'rest_framework.permissions.IsAuthenticated',
+        # 'rest_framework.permissions.AllowAny',
+
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        
     ]
 }
