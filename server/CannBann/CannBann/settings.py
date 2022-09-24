@@ -77,6 +77,17 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS=['http://localhost:3000']
 # APPEND_SLASH=False
 
+SIMPLE_JWT = {
+
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': False,
+    'UPDATE_LAST_LOGIN': False,
+
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': env('JWT_SECRET'),
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
+
 ROOT_URLCONF = 'CannBann.urls'
 
 TEMPLATES = [
