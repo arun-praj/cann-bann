@@ -5,9 +5,10 @@ from CannBann.AbstractModels import AbstractTimeStamp
 
 class Board(AbstractTimeStamp):
     board_name = models.CharField(max_length=256)
-    board_admins = models.ManyToManyField(User, related_name='board_admins')
-    board_members = models.ManyToManyField(User,related_name='board_members')
-    backkgroundColor = models.CharField(max_length=62)
+    board_admins = models.ManyToManyField(User, related_name='board_admins',blank=True)
+    board_members = models.ManyToManyField(User,related_name='board_members',blank=True)
+    background_color = models.CharField(max_length=62)
+    author = models.ForeignKey(User,on_delete=models.CASCADE)
 
     class Meta:
         db_table = "boards" #the name of database table to use

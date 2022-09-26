@@ -38,7 +38,6 @@ class UserProfileViewSet(viewsets.ViewSet):
     def me(self,request):
         print(request.user.id)
         user = get_object_or_404(User,pk = request.user.id)
-        print(user)
         return Response(UserSerializer(user).data)
 
 

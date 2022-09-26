@@ -16,7 +16,7 @@ def incrementColumnIDbyOne():
 class Column(AbstractTimeStamp):
     title = models.CharField(max_length=256)
     position = models.IntegerField(default=incrementColumnIDbyOne)
-    board=models.ForeignKey(Board,on_delete=models.CASCADE)
+    board=models.ForeignKey(Board,on_delete=models.CASCADE,related_name='board')
   
 
     class Meta:

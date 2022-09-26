@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 from pathlib import Path
 import environ
 import os
+from datetime import timedelta
 env = environ.Env(
     # set casting, default value
     DEBUG=(bool, False)
@@ -82,6 +83,8 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': False,
     'UPDATE_LAST_LOGIN': False,
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
 
     'ALGORITHM': 'HS256',
     'SIGNING_KEY': env('JWT_SECRET'),

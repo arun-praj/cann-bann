@@ -8,12 +8,8 @@ const Nav = () => {
    const logout = useAuthStore((state) => state.logout)
    const login_success = useAuthStore((state) => state.login_success)
    const user = useAuthStore((state) => state.user)
-   console.log(user)
-   useEffect(() => {
-      if (login_success == false) {
-         Router.push('/login')
-      }
-   }, [login_success, user, logout])
+
+   useEffect(() => {}, [login_success, user, logout])
 
    return (
       <div>
@@ -44,6 +40,7 @@ const Nav = () => {
                      <Dropdown.Item
                         onClick={() => {
                            logout()
+                           Router.push('/login')
                         }}
                      >
                         Sign out

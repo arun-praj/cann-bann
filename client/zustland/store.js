@@ -1,5 +1,5 @@
 import create from 'zustand'
-import { setCookie } from 'cookies-next'
+import { setCookie, getCookie } from 'cookies-next'
 import { mountStoreDevtool } from 'simple-zustand-devtools'
 export const useAuthStore = create((set) => {
    return {
@@ -10,7 +10,6 @@ export const useAuthStore = create((set) => {
          set({ login_success: payload ?? false })
       },
       setUser: ({ user }) => {
-         console.log(user)
          set({
             user: {
                email: user?.email,
@@ -45,6 +44,53 @@ export const useAuthStore = create((set) => {
       },
    }
 })
+
+export const useBoardStore = create((set, get) => {
+   return {
+      boards: [],
+      board_error: false,
+      newBoard: {},
+      board_message: '',
+      save_success: false,
+      disable_save_success: () => {
+         set({ save_success: false })
+      },
+      fetchBoard: async () => {
+         const res_boards = await fetch(`${process.env.NEXT_PUBLIC_HOST}/board/`, {
+            method: 'GET',
+            headers: {
+               Accept: 'application/json',
+               'Content-Type': 'application/json',
+               Authorization: `Bearer ${getCookie('access')}`,
+            },
+         })
+         const boards_data = await res_boards.json()
+         // console.log(boards_data)
+         if (res_boards.status == 200) {
+            set({ boards: boards_data, board_error: false, board_message: '' })
+         }
+      },
+      saveBoard: async (payload) => {
+         const res_board = await fetch(`${process.env.NEXT_PUBLIC_HOST}/board/`, {
+            method: 'POST',
+            headers: {
+               Accept: 'application/json',
+               'Content-Type': 'application/json',
+               Authorization: `Bearer ${getCookie('access')}`,
+            },
+            body: JSON.stringify(payload),
+         })
+
+         const board_data = await res_board.json()
+         if (res_board.status == 200) {
+            set({ board_error: false, board_message: '', newBoard: board_data, save_success: true })
+         } else {
+            set({ board_error: true, board_message: board_data?.detail || board_data?.details, save_success: false })
+         }
+      },
+   }
+})
+
 if (process.env.NODE_ENV === 'development') {
    mountStoreDevtool('Store', useAuthStore)
 }

@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import AuthorizedLayout from '../hocs/AuthorizedLayout'
 import Board from '../components/Board'
-import { Container } from 'postcss'
+
 export default function Home() {
    return (
       <div>

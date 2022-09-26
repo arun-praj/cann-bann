@@ -14,6 +14,8 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
 from userprofile.views import UserProfileViewSet
+from board.views import BoardViewSet
+from column.views import ColumnViewSet
 
 
 schema_view = get_schema_view(
@@ -32,6 +34,9 @@ schema_view = get_schema_view(
 
 router = DefaultRouter()
 router.register(r'user',UserProfileViewSet)
+router.register(r'board',BoardViewSet)
+router.register(r'column',ColumnViewSet)
+
 
 urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
