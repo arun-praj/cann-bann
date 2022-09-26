@@ -91,6 +91,31 @@ export const useBoardStore = create((set, get) => {
    }
 })
 
+export const useColumnStore = create((set) => {
+   return {
+      column_board: {},
+      column_board_error: false,
+      fetchBoardWithColumn: async (payload) => {
+         const res = await fetch(`${process.env.NEXT_PUBLIC_HOST}/board/${payload}/`, {
+            method: 'GET',
+            headers: {
+               Accept: 'application/json',
+               'Content-Type': 'application/json',
+               Authorization: `Bearer ${getCookie('access')}`,
+            },
+         })
+
+         const data = await res.json()
+
+         if (res.status == 200) {
+            set({ column_board: data, column_board_error: false })
+         } else {
+            set({ column_board: {}, column_board_error: true })
+         }
+      },
+   }
+})
+
 if (process.env.NODE_ENV === 'development') {
    mountStoreDevtool('Store', useAuthStore)
 }

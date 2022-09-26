@@ -25,7 +25,7 @@ class Story(AbstractTimeStamp):
     description = models.TextField()
     author = models.ForeignKey(User,on_delete=models.CASCADE,related_name='author')
     position = models.IntegerField(default=incrementStoryPositionbyOne)
-    column = models.ForeignKey(Column,on_delete=models.CASCADE)
+    column = models.ForeignKey(Column,on_delete=models.CASCADE,related_name='column')
     assignee = models.ManyToManyField(User,related_name='assignee')
     priority = models.CharField(
         max_length=2,

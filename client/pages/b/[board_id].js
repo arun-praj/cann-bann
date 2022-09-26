@@ -5,76 +5,32 @@ import { DragDropContext } from 'react-beautiful-dnd'
 import AuthorizedLayout from '../../hocs/AuthorizedLayout'
 import Column from '../../components/Column'
 
-//fetch your column from here
-const coldata = [
-   {
-      id: 1,
-      title: 'TODO',
-      position: 0,
-      board: 12,
-      created_at: '',
-      stories: [
-         {
-            id: 100,
-            description: 'ar',
-            position: 0,
-            priority: 'Low',
-         },
-         {
-            id: 200,
-            description: 'br',
-            position: 1,
-            priority: 'Low',
-         },
-         {
-            id: 300,
-            description: 'cr',
-            position: 2,
-            priority: 'Low',
-         },
-      ],
-   },
-   {
-      id: 2,
-      title: 'ONGOING',
-      position: 1,
-      board: 12,
-      created_at: '',
-      stories: [
-         {
-            id: 10,
-            description: 'ar',
-            position: 0,
-            priority: 'Low',
-         },
-         {
-            id: 11,
-            description: 'br',
-            position: 1,
-            priority: 'Low',
-         },
-         {
-            id: 12,
-            description: 'cr',
-            position: 2,
-            priority: 'Low',
-         },
-      ],
-   },
-]
+import { useColumnStore } from '../../zustland/store'
 
 const Board = () => {
    // const [columns, setColumns] = useState()
    const router = useRouter()
    const { board_id } = router.query
    const [windowLoaded, setWindowLoaded] = useState(false)
+
+   const fetchBoardWithColumn = useColumnStore((state) => state.fetchBoardWithColumn)
+   const column_board = useColumnStore((state) => state.column_board)
+   // console.log(board_id)
+   useEffect(() => {
+      if (board_id) fetchBoardWithColumn(board_id)
+   }, [board_id])
    useEffect(() => {
       if (typeof window != undefined) {
          setWindowLoaded(true)
       }
    }, [])
+
    const handleDragEnd = (result) => {
       console.log('drag end')
+   }
+
+   if (!column_board) {
+      return <h1 className=' text-3xl text-black mt-20'>Loading...</h1>
    }
    return (
       <AuthorizedLayout>
@@ -82,7 +38,7 @@ const Board = () => {
             {windowLoaded && (
                <DragDropContext onDragEnd={handleDragEnd}>
                   <div className=' flex gap-3'>
-                     {coldata.map((_column) => {
+                     {column_board?.column?.map((_column) => {
                         return <Column key={_column.id} data={_column} />
                      })}
                   </div>
