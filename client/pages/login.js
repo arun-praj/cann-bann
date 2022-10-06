@@ -1,9 +1,13 @@
 import Link from 'next/link'
 import Router from 'next/router'
+import getConfig from 'next/config'
 import { useEffect, useState } from 'react'
 import cookie from 'cookie'
 
 import { useAuthStore } from '../zustland/store'
+
+const { serverRuntimeConfig, publicRuntimeConfig } = getConfig()
+const apiUrl = serverRuntimeConfig.apiUrl || publicRuntimeConfig.apiUrl
 const Login = () => {
    const [username, setUsername] = useState('')
    const [password, setPassword] = useState('')
@@ -110,8 +114,8 @@ const Login = () => {
 export async function getServerSideProps({ req }) {
    const cookies = cookie.parse(req.headers.cookie ?? '')
    const access = cookies.access ?? false
-
-   const resAPI = await fetch(`${process.env.NEXT_PUBLIC_HOST}/token/verify/`, {
+   console.log(apiUrl)
+   const resAPI = await fetch(`${process.env.NEXT_PUBLIC_SERVER_HOST}/token/verify/`, {
       method: 'POST',
       headers: {
          Accept: 'application/json',

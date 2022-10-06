@@ -13,7 +13,7 @@ export default async (req, res) => {
       }
 
       try {
-         const resAPI = await fetch(`${process.env.NEXT_PUBLIC_HOST}/token/verify/`, {
+         const resAPI = await fetch(`${process.env.NEXT_PUBLIC_SERVER_HOST}/token/verify/`, {
             method: 'POST',
             headers: {
                Accept: 'application/json',
@@ -22,7 +22,7 @@ export default async (req, res) => {
             body: JSON.stringify({ token: access }),
          })
          if (resAPI.status == 200) {
-            const res_user = await fetch(`${process.env.NEXT_PUBLIC_HOST}/user/me/`, {
+            const res_user = await fetch(`${process.env.NEXT_PUBLIC_SERVER_HOST}/user/me/`, {
                method: 'get',
                headers: {
                   Accept: 'application/json',
@@ -39,7 +39,7 @@ export default async (req, res) => {
          }
          console.log('server api expired')
          if (resAPI.status == 401) {
-            const req_refresh = await fetch(`${process.env.NEXT_PUBLIC_HOST}/token/refresh/`, {
+            const req_refresh = await fetch(`${process.env.NEXT_PUBLIC_SERVER_HOST}/token/refresh/`, {
                method: 'POST',
                headers: {
                   Accept: 'application/json',

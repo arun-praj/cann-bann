@@ -16,7 +16,7 @@ from drf_yasg import openapi
 from userprofile.views import UserProfileViewSet
 from board.views import BoardViewSet
 from column.views import ColumnViewSet
-
+from story.views import StoryViewSet
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -36,6 +36,7 @@ router = DefaultRouter()
 router.register(r'user',UserProfileViewSet)
 router.register(r'board',BoardViewSet)
 router.register(r'column',ColumnViewSet)
+router.register(r'story',StoryViewSet)
 
 
 urlpatterns = [

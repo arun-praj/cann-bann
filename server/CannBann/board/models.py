@@ -17,6 +17,6 @@ class Board(AbstractTimeStamp):
       
 
     def __str__(self) -> str:
-        return f'{self.board_name}'
+        return f'{self.id,self.board_name}'
 
 

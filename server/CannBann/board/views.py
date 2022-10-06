@@ -16,9 +16,10 @@ class BoardViewSet(viewsets.ModelViewSet):
 
 
     def retrieve(self, request,pk=None):
+        # get board with all columns and its stories
         board = get_object_or_404(Board,pk=pk)
-        
         return Response(BoardWith_Column_Story_Serializer(board).data)
+
 
     def list (self, request, *args, **kwargs):
         # return user's board

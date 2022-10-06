@@ -25,9 +25,9 @@ const Board = () => {
    const newBoard = useBoardStore((store) => store.newBoard)
    const save_success = useBoardStore((store) => store.save_success)
    const disable_save_success = useBoardStore((store) => store.disable_save_success)
+   const boards = useBoardStore((store) => store.boards)
 
    const [closeModal, setCloseModal] = useState(true)
-   const boards = useBoardStore((store) => store.boards)
 
    const [selectedColor, setSelectedColor] = useState(() => {
       var item = colors[Math.floor(Math.random() * colors.length)]
@@ -58,7 +58,7 @@ const Board = () => {
 
          <div className=' flex text-white flex-wrap justify-start '>
             {boards?.author_board?.map((board) => {
-               return <_Boards key={board.id} board={board} />
+               return <_Boards board={board} />
             })}
 
             <Dropdown
@@ -158,7 +158,7 @@ const Board = () => {
          <div className=' flex text-white flex-wrap justify-start '>
             {boards?.member_board?.length > 0 ? (
                boards?.member_board?.map((board) => {
-                  return <_Boards key={board.id} board={board} />
+                  return <_Boards key={board?.id} board={board} />
                })
             ) : (
                <div className='text-black font-light  opacity-70'>Oops. Looks like you havent joined any other board.</div>

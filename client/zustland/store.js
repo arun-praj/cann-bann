@@ -18,23 +18,27 @@ export const useAuthStore = create((set) => {
          })
       },
       login: async (payload) => {
-         const res = await fetch(`${process.env.NEXT_PUBLIC_HOST}/token/`, {
-            method: 'POST',
-            headers: {
-               Accept: 'application/json',
-               'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(payload),
-         })
+         try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_HOST}/token/`, {
+               method: 'POST',
+               headers: {
+                  Accept: 'application/json',
+                  'Content-Type': 'application/json',
+               },
+               body: JSON.stringify(payload),
+            })
 
-         const data = await res.json()
+            const data = await res.json()
 
-         if (res.status == 200) {
-            set({ error: false, login_success: true })
-            setCookie('access', data?.access, { maxAge: 60 * 30 })
-            setCookie('refresh', data?.refresh, { maxAge: 60 * 60 * 24 })
-         } else {
-            set({ error: true, login_success: false })
+            if (res.status == 200) {
+               set({ error: false, login_success: true })
+               setCookie('access', data?.access, { maxAge: 60 * 30 * 24 })
+               setCookie('refresh', data?.refresh, { maxAge: 60 * 60 * 24 })
+            } else {
+               set({ error: true, login_success: false })
+            }
+         } catch (e) {
+            console.log('asdfg', e)
          }
       },
       logout: async () => {
@@ -56,18 +60,22 @@ export const useBoardStore = create((set, get) => {
          set({ save_success: false })
       },
       fetchBoard: async () => {
-         const res_boards = await fetch(`${process.env.NEXT_PUBLIC_HOST}/board/`, {
-            method: 'GET',
-            headers: {
-               Accept: 'application/json',
-               'Content-Type': 'application/json',
-               Authorization: `Bearer ${getCookie('access')}`,
-            },
-         })
-         const boards_data = await res_boards.json()
-         // console.log(boards_data)
-         if (res_boards.status == 200) {
-            set({ boards: boards_data, board_error: false, board_message: '' })
+         try {
+            const res_boards = await fetch(`${process.env.NEXT_PUBLIC_HOST}/board/`, {
+               method: 'GET',
+               headers: {
+                  Accept: 'application/json',
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${getCookie('access')}`,
+               },
+            })
+            const boards_data = await res_boards.json()
+
+            if (res_boards.status == 200) {
+               set({ boards: boards_data, board_error: false, board_message: '' })
+            }
+         } catch (e) {
+            console.log('asdf board', e)
          }
       },
       saveBoard: async (payload) => {
@@ -91,31 +99,16 @@ export const useBoardStore = create((set, get) => {
    }
 })
 
-export const useColumnStore = create((set) => {
-   return {
-      column_board: {},
-      column_board_error: false,
-      fetchBoardWithColumn: async (payload) => {
-         const res = await fetch(`${process.env.NEXT_PUBLIC_HOST}/board/${payload}/`, {
-            method: 'GET',
-            headers: {
-               Accept: 'application/json',
-               'Content-Type': 'application/json',
-               Authorization: `Bearer ${getCookie('access')}`,
-            },
-         })
-
-         const data = await res.json()
-
-         if (res.status == 200) {
-            set({ column_board: data, column_board_error: false })
-         } else {
-            set({ column_board: {}, column_board_error: true })
-         }
-      },
-   }
-})
-
+export const useModal = create((set) => ({
+   isOpen: false,
+   modalData: {},
+   setModalState: (payload) => {
+      set({ isOpen: payload })
+   },
+   setModalData: (payload) => {
+      set({ modalData: payload })
+   },
+}))
 if (process.env.NODE_ENV === 'development') {
    mountStoreDevtool('Store', useAuthStore)
 }

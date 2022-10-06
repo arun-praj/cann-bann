@@ -21,10 +21,10 @@ module.exports = {
       },
       fontFamily: {
          body: [
+            '-apple-system',
             'Inter',
             'ui-sans-serif',
             'system-ui',
-            '-apple-system',
             'system-ui',
             'Segoe UI',
             'Roboto',

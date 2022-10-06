@@ -1,0 +1,37 @@
+version: '3.7'
+services:
+   server:
+      container_name: django
+      build:
+         context: ./server/CannBann/
+         dockerfile: Dockerfile
+
+      volumes:
+         - ./server/CannBann:/code
+      ports:
+         - 8000:8000
+      restart: on-failure
+      networks:
+         - cannbann
+
+   client:
+      container_name: next
+      build:
+         context: ./client
+         dockerfile: Dockerfile
+      command: npm run dev
+      volumes:
+         - /app/node_modules
+         - ./client:/app
+         - /app/.next
+      environment:
+         - NODE_ENV=development
+      ports:
+         - 3000:3000
+         - 49153:49153
+      networks:
+         - cannbann
+
+networks:
+   cannbann:
+      driver: bridge
