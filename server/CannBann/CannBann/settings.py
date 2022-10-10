@@ -24,7 +24,7 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 
 
-# print( env('SECRET_KEY'))
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
@@ -36,7 +36,7 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['server','django','client','localhost']
+ALLOWED_HOSTS = ['server','django','client','localhost','192.168.1.104']
 
 
 # Application definition
@@ -48,7 +48,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    #3rd party
     "corsheaders",
+    'django_filters',
     'rest_framework',
     'drf_yasg',
     
@@ -57,7 +59,7 @@ INSTALLED_APPS = [
     'column',
     'story',
     'userprofile',
-    #3rd packages
+   
 ]
 
 
@@ -171,6 +173,7 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
     'DEFAULT_PERMISSION_CLASSES':[
         'rest_framework.permissions.IsAuthenticated',
         # 'rest_framework.permissions.AllowAny',

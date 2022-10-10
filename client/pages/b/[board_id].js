@@ -10,23 +10,22 @@ import Column from '../../components/Column'
 import { useModal } from '../../zustland/store'
 import Backdrop from '../../hocs/Backdrop'
 import toast from 'react-hot-toast'
+import { Dropdown } from 'flowbite-react'
+import Avatar from 'react-avatar'
+// import { useDebouncedCallback } from 'use-debounce'
 
 const Board = (props) => {
    const router = useRouter()
    const { board_id } = router.query
    const { data } = props
 
-   // const isOpen = useModal((state) => state.isOpen)
-   // const setModalState = useModal((state) => state.setModalState)
-
    const [board, setBoard] = useState(data)
    const [columnTitle, setColumnTitle] = useState('')
    const [storyTitle, setStoryTitle] = useState('')
    const [isAddNewColumn, setAddNewColumn] = useState(false)
-   const [isAddNewStory, setAddNewStory] = useState(false)
+   const [isMemberModalOpen, setMemberModalOpen] = useState(false)
 
    const [windowLoaded, setWindowLoaded] = useState(false)
-
    useEffect(() => {
       if (typeof window != undefined) {
          setWindowLoaded(true)
@@ -261,7 +260,7 @@ const Board = (props) => {
       }
    }
 
-   if (!data) {
+   if (!board) {
       return <h1 className=' text-3xl text-black mt-20'>Loading...</h1>
    }
 
@@ -310,8 +309,72 @@ const Board = (props) => {
                            <rect x='4' y='8' width='6' height='12' rx='2' />
                            <rect x='14' y='8' width='6' height='6' rx='2' />
                         </svg>
-
                         {board.board_name}
+                        {/* {console.log(board)} */}
+                     </div>
+                     <Dropdown
+                        inline={true}
+                        arrowIcon={false}
+                        label={
+                           <div className=' flex items-center gap-1 text-md px-3 py-1 cursor-pointer bg-[#ffffff49] text-white  transition-all font-semibold rounded-md'>
+                              <svg
+                                 xmlns='http://www.w3.org/2000/svg'
+                                 fill='none'
+                                 viewBox='0 0 24 24'
+                                 strokeWidth={1.5}
+                                 stroke='#ffffff'
+                                 className='w-3 h-3'
+                              >
+                                 <path strokeLinecap='round' strokeLinejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5' />
+                              </svg>
+                              Board members
+                           </div>
+                        }
+                     >
+                        <Dropdown.Item>
+                           <div className=' flex gap-4 items-center'>
+                              <Avatar name={board.author.username} size='20' round={true} />
+                              {board.author.username} (author)
+                           </div>
+                        </Dropdown.Item>
+                        <Dropdown.Divider />
+                        {board?.board_members.length > 0 ? (
+                           <div>
+                              {board.board_members.map((member) => {
+                                 return (
+                                    <Dropdown.Item key={member.id}>
+                                       <div className=' flex gap-4 items-center'>
+                                          <Avatar name={member.username} size='20' round={true} />
+                                          {member.username} (member)
+                                       </div>
+                                    </Dropdown.Item>
+                                 )
+                              })}
+                           </div>
+                        ) : (
+                           <div className='p-2'>
+                              There are no other <br /> members in this board.
+                           </div>
+                        )}
+                     </Dropdown>
+                     <div
+                        onClick={() => setMemberModalOpen(true)}
+                        className=' rounded-full flex items-center gap-1 text-md px-2 py-1 cursor-pointer bg-[#ffffff49] text-white  transition-all font-semibold '
+                     >
+                        <svg
+                           xmlns='http://www.w3.org/2000/svg'
+                           fill='none'
+                           viewBox='0 0 24 24'
+                           strokeWidth={1.5}
+                           stroke='currentColor'
+                           className='w-4 h-4'
+                        >
+                           <path
+                              strokeLinecap='round'
+                              strokeLinejoin='round'
+                              d='M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z'
+                           />
+                        </svg>
                      </div>
                   </div>
                </nav>
@@ -390,6 +453,8 @@ const Board = (props) => {
             </div>
 
             <StoryModal></StoryModal>
+
+            <MemberModal setBoard={setBoard} board={board} isMemberModalOpen={isMemberModalOpen} setMemberModalOpen={setMemberModalOpen} />
          </div>
       </AuthorizedLayout>
    )
@@ -435,14 +500,46 @@ const StoryModal = () => {
    const isOpen = useModal((state) => state.isOpen)
    const setModalState = useModal((state) => state.setModalState)
    const modalData = useModal((state) => state.modalData)
+   const setModalData = useModal((state) => state.setModalData)
+   const [description, setDescription] = useState(() => {
+      return modalData?.description
+   })
    let created = new Date(modalData?.created_at).toDateString()
    let updated = new Date(modalData?.updated_at).toDateString()
+
+   useEffect(() => {
+      setDescription(modalData.description)
+      console.log(modalData)
+   }, [modalData])
 
    const priorityColor = {
       HIGHEST: '#BC5090',
       CRITICAL: '#FF6361',
       ALARMING: '#D2D462',
       LOW: '6F975C',
+   }
+
+   // console.log(modalData)
+   const partialUpdate = async () => {
+      if (description.length < 1) {
+         toast.error('Field cannot be empty')
+         return
+      }
+      const res = await fetch(`${process.env.NEXT_PUBLIC_HOST}/story/${modalData?.id}/`, {
+         method: 'PATCH',
+         headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${getCookie('access')}`,
+         },
+         body: JSON.stringify({ description }),
+      })
+      const data = await res.json()
+      if (res.status == 200) {
+         setModalData(data)
+      } else {
+         toast.error('Couldnot update')
+      }
    }
 
    return (
@@ -464,8 +561,8 @@ const StoryModal = () => {
 
                {modalData.title}
             </h2>
-            <div className='mt-6 flex items-center gap-2 cursor-pointer'>
-               <div className='flex items-center gap-1'>
+            <div className='mt-6 flex items-center gap-2 cursor-pointer opacity-20'>
+               <div className='flex items-center gap-1 '>
                   <div>
                      <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' strokeWidth={1.5} stroke='#7c7a7b' className='w-4 h-4'>
                         <path
@@ -485,7 +582,7 @@ const StoryModal = () => {
                   </svg>
                </div>
             </div>
-            <div className='mt-6 flex items-center gap-2 cursor-pointer'>
+            <div className='mt-6 flex items-center gap-2 cursor-pointer opacity-20'>
                <div className='flex items-center gap-1'>
                   <div>
                      <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' strokeWidth={1.5} stroke='#7c7a7b' className='w-4 h-4'>
@@ -524,6 +621,7 @@ const StoryModal = () => {
                   {modalData?.priority}
                </div>
             </div>
+
             <div className=' mt-6'>
                <div className='flex items-center gap-1'>
                   <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' strokeWidth={1.5} stroke='#7c7a7b' className='w-4 h-4'>
@@ -536,8 +634,27 @@ const StoryModal = () => {
 
                   <h2 className=' text-sm'>Description</h2>
                </div>
-               <input className=' rounded-md ml-5 mt-2 py-2 px-1 text-[12px] w-[96%]  ' value={modalData?.description} />
-               {/* <h3 > {}</h3> */}
+               <textarea
+                  className='w-full rounded-md mt-1 border-[#dcdadb] placeholder-opacity-75 placeholder:text-xs text-sm'
+                  placeholder='Write your description here'
+                  id={modalData?.id}
+                  // defaultValue={modalData?.description}
+                  value={modalData?.id && description}
+                  // onChange={(e) => console.log(e.target.id)}
+                  onChange={(e) => {
+                     console.log(e.target.id)
+                     if (e.target.id == modalData?.id) setDescription(e.target.value)
+                  }}
+               ></textarea>
+               <button
+                  onClick={() => partialUpdate()}
+                  style={{
+                     display: modalData?.description == description ? 'none' : 'block',
+                  }}
+                  className=' px-3 py-1 mt-2 bg-sky-600 rounded-md text-sm text-white'
+               >
+                  Save
+               </button>
             </div>
             <div className=' mt-6'>
                <div className='flex items-center gap-1'>
@@ -565,9 +682,161 @@ const StoryModal = () => {
             style={{
                display: isOpen ? 'block' : 'none',
             }}
-            onClick={() => setModalState(false)}
+            onClick={() => {
+               setDescription('')
+               setModalState(false)
+            }}
          ></Backdrop>
       </>
+   )
+}
+
+const MemberModal = ({ setBoard, isMemberModalOpen, setMemberModalOpen, board }) => {
+   const router = useRouter()
+   const { board_id } = router.query
+
+   const [userInput, setUserInput] = useState('')
+   const [loading, setLoading] = useState(false)
+   const [foundUsers, setFoundUsers] = useState([])
+
+   const searchUsers = async () => {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_HOST}/user/?search=${userInput}`, {
+         method: 'GET',
+         headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${getCookie('access')}`,
+         },
+      })
+      const data = await res.json()
+      setLoading(false)
+
+      if (res.status == 200) {
+         setFoundUsers(data)
+      } else {
+         setFoundUsers(['No user found with given search query'])
+      }
+   }
+   const addBoardMember = async (user_id) => {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_HOST}/board/${board_id}/partial_update_members/`, {
+         method: 'PATCH',
+         headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${getCookie('access')}`,
+         },
+         body: JSON.stringify({ user_id }),
+      })
+      const data = await res.json()
+      if (res.status == 200) {
+         // console.log(data)
+         setBoard({ ...board, board_members: [...board.board_members, data] })
+         console.log(board)
+         toast.success(`${data?.username} added in this board.`)
+      } else {
+         toast.success(`Something went wrong`)
+      }
+   }
+   useEffect(() => {
+      setLoading(true)
+      if (userInput.length > 0) {
+         const delayDebounceFn = setTimeout(() => {
+            searchUsers()
+         }, 1500)
+
+         return () => clearTimeout(delayDebounceFn)
+      } else {
+         setFoundUsers([])
+         setLoading(false)
+      }
+   }, [userInput])
+
+   return (
+      <div className='flex relative'>
+         <div
+            style={{
+               display: isMemberModalOpen ? 'block' : 'none',
+            }}
+            className='  rounded-sm  w-80 flex px-5 py-6  grow bg-white  fixed left-1/2 top-[20%] z-40 translate-x-[-50%]'
+         >
+            <h3 className=' font-semibold pb-2'>Add members</h3>
+            <input
+               type={'text'}
+               value={userInput}
+               onChange={(e) => {
+                  setUserInput(e.target.value)
+               }}
+               autoFocus={true}
+               autoComplete='off'
+               placeholder='Enter email or username'
+               className=' w-full rounded-sm border-blue-500 shadoow-[inset_0_0_0_2px_#0079bf)] text-sm'
+            />
+            <h4 className=' font-semibold py-2'>Joined members</h4>
+            <div className='flex items-center mb-2 gap-2 text-xs'>
+               <div>
+                  <Avatar name={board.author.username} size='20' round={true} />
+               </div>
+               <div>
+                  <div className=' font-bold'>
+                     {board.author.username} / UID: {board.author.id}
+                  </div>
+                  <div>{board.author.email}</div>
+               </div>
+            </div>
+            {board.board_members.map((user) => {
+               return (
+                  <div key={user.id} className='flex items-center mb-2 gap-2 text-xs'>
+                     <div>
+                        <Avatar name={user.username} size='25' round={true} />
+                     </div>
+                     <div>
+                        <div className=' font-bold'>
+                           {user.username} / UID: {user.id}
+                        </div>
+                        <div>{user.email}</div>
+                     </div>
+                  </div>
+               )
+            })}
+            {userInput.length > 0 && (
+               <div className=' shadow-lg absolute p-3 bg-[#fafbfc] top-[100px] w-[80%] left-8 rounded-sm border-[1px] '>
+                  {loading ? (
+                     'Loading'
+                  ) : (
+                     <>
+                        {foundUsers.map((user) => {
+                           return (
+                              <div key={user.id} onClick={() => addBoardMember(user.id)} className='flex items-center mb-2 gap-2 text-xs'>
+                                 <div>
+                                    <Avatar name={user.username} size='25' round={true} />
+                                 </div>
+                                 <div>
+                                    <div className=' font-bold'>
+                                       {user.username} / UID: {user.id}
+                                    </div>
+                                    <div>{user.email}</div>
+                                 </div>
+                              </div>
+                           )
+                        })}
+                        {foundUsers.length < 1 && !loading && <div className=' text-xs'>'Looks like there is not user with give input'</div>}
+                     </>
+                  )}
+               </div>
+            )}
+         </div>
+
+         <Backdrop
+            className='fixed top-0 left-0 h-screen w-screen  bg-black  bg-opacity-60 z-30'
+            style={{
+               display: isMemberModalOpen ? 'block' : 'none',
+            }}
+            onClick={() => {
+               setUserInput('')
+               setMemberModalOpen(false)
+            }}
+         ></Backdrop>
+      </div>
    )
 }
 

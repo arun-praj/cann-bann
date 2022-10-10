@@ -22,13 +22,13 @@ def get_latest_position(Model ,belongs_to):
     return latest_position + 1
    
 
-class ColumnViewSet(viewsets.ViewSet):
+class ColumnViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated,IsAuthorOrReadOnly]
     queryset = Board.objects.filter(is_active=True)
 
     # def list(self,request):
     #     columns = Column.objects.filter(board=16)
-    #     print(columns)
+  
     #     return Response()
 
 

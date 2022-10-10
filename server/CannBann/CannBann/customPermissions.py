@@ -13,5 +13,4 @@ class IsAuthorOrReadOnly(permissions.BasePermission):
         # if get request then return true else check if user is author of that data
         if request.method in permissions.SAFE_METHODS:
             return True
-
-        return obj.id == request.user.id
+        return obj.author_id == request.user.id

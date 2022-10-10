@@ -35,7 +35,6 @@ class StoryViewSet(viewsets.ModelViewSet):
 
 
     def create(self, request, *args, **kwargs):
-        print('asdf')
         column_obj = get_object_or_404(Column,id=request.data.get('column_id',''))
         story_obj = Story.objects.create(title=request.data.get('title',''),position=get_latest_story_position(request.data.get('column_id')),author=request.user,column=column_obj)
         serializer = StorySerializer(story_obj)

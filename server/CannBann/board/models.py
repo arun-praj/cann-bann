@@ -1,3 +1,4 @@
+from email.policy import default
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -20,3 +21,6 @@ class Board(AbstractTimeStamp):
         return f'{self.id,self.board_name}'
 
 
+# class Board_members(AbstractTimeStamp):
+#       board_member = models.ForeignKey(User,related_name='a',blank=True,on_delete=models.CASCADE)
+        # is_admin = models.BooleanField(default=False)

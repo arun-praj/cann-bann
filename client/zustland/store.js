@@ -99,7 +99,7 @@ export const useBoardStore = create((set, get) => {
    }
 })
 
-export const useModal = create((set) => ({
+export const useModal = create((set, get) => ({
    isOpen: false,
    modalData: {},
    setModalState: (payload) => {

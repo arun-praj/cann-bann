@@ -5,7 +5,8 @@ from rest_framework.response import Response
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework import serializers
+from rest_framework import serializers,filters
+
 
 from rest_framework.permissions import AllowAny,IsAuthenticated
 from CannBann.customPermissions import IsAuthorOrReadOnly
@@ -14,11 +15,14 @@ from CannBann.customPermissions import IsAuthorOrReadOnly
 from .models import UserProfile
 from .serializer import UserSerializer
 
-class UserProfileViewSet(viewsets.ViewSet):
-    queryset = UserProfile.objects.all()
+class UserProfileViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAuthorOrReadOnly]
+    permission_classes = [IsAuthorOrReadOnly,IsAuthenticated]
 
+    # must use ModelViewSet / ListViewSet / mixin to work
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['^username','^email']
     
     def get_tokens_for_user(self,user):
         refresh = RefreshToken.for_user(user)
@@ -27,16 +31,10 @@ class UserProfileViewSet(viewsets.ViewSet):
             'refresh': str(refresh),
             'access': str(refresh.access_token),
         }
-
-    def list (self,request):
-        # print((request.user.id))
-        queryset = User.objects.all()
-        serializer = UserSerializer(queryset,many=True)
-        return Response(serializer.data)
-
+    
     @action(detail=False,methods=['get'],permission_classes=(IsAuthenticated,))
     def me(self,request):
-        print(request.user.id)
+    
         user = get_object_or_404(User,pk = request.user.id)
         return Response(UserSerializer(user).data)
 

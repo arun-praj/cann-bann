@@ -14,5 +14,5 @@ class BoardWith_Column_Story_Serializer(serializers.ModelSerializer):
     column = ColumnSerializer(many=True,read_only=False,source='board')
     class Meta:
         model = Board
-        fields = ('id','board_name','column','background_color')
+        fields = ('id','board_name','column','background_color','author','board_members')
         depth = 2

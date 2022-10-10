@@ -8,7 +8,7 @@ const nextConfig = {
    publicRuntimeConfig: {
       URI: 'localhost:8000',
    },
-   webpackDevMiddleware: (config) => {
+   webpack: (config) => {
       config.watchOptions = {
          poll: 1000,
          aggregateTimeout: 300,
