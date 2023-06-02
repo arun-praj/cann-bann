@@ -19,7 +19,7 @@ export const useAuthStore = create((set) => {
       },
       login: async (payload) => {
          try {
-            const res = await fetch(`http://localhost:8000/api/token/`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_HOST}/token/`, {
                method: 'POST',
                headers: {
                   Accept: 'application/json',
