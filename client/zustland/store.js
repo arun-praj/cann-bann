@@ -1,4 +1,4 @@
-import create from 'zustand'
+import { create } from 'zustand'
 import { setCookie, getCookie } from 'cookies-next'
 import { mountStoreDevtool } from 'simple-zustand-devtools'
 export const useAuthStore = create((set) => {
@@ -19,7 +19,7 @@ export const useAuthStore = create((set) => {
       },
       login: async (payload) => {
          try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_HOST}/token/`, {
+            const res = await fetch(`http://localhost:8000/api/token/`, {
                method: 'POST',
                headers: {
                   Accept: 'application/json',

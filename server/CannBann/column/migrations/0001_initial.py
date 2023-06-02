@@ -8,10 +8,6 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-        ('board', '0002_rename_backgroundcolor_board_background_color'),
-    ]
-
     operations = [
         migrations.CreateModel(
             name='Column',

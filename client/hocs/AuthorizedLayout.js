@@ -14,6 +14,7 @@ const AuthorizedLayout = ({ children }) => {
          const data = await res.json()
          if (data?.error == true) {
             setLoginSuccess(false)
+            console.log(data)
             Router.push('/login')
          } else {
             setUser(data)

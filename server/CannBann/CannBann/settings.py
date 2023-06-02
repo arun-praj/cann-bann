@@ -30,13 +30,13 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 
-SECRET_KEY = env('SECRET_KEY')
+SECRET_KEY = 'asdfaf2asdfasdfasdf3erpo2i39039023048h04309hU)908'
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['server','django','client','localhost','192.168.1.104']
+ALLOWED_HOSTS = ['server', 'django', 'client', 'localhost', '192.168.1.104', '127.0.0.1']
 
 
 # Application definition
@@ -89,7 +89,7 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
 
     'ALGORITHM': 'HS256',
-    'SIGNING_KEY': env('JWT_SECRET'),
+    'SIGNING_KEY': 'asdf3erwr3okjeroijfpiojaerjoi',
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 

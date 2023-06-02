@@ -114,8 +114,7 @@ const Login = () => {
 export async function getServerSideProps({ req }) {
    const cookies = cookie.parse(req.headers.cookie ?? '')
    const access = cookies.access ?? false
-   console.log(apiUrl)
-   const resAPI = await fetch(`${process.env.NEXT_PUBLIC_SERVER_HOST}/token/verify/`, {
+   const resAPI = await fetch(`http://localhost:8000/api/token/verify/`, {
       method: 'POST',
       headers: {
          Accept: 'application/json',

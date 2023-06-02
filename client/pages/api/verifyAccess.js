@@ -21,6 +21,7 @@ export default async (req, res) => {
             },
             body: JSON.stringify({ token: access }),
          })
+         console.log('res', resAPI)
          if (resAPI.status == 200) {
             const res_user = await fetch(`${process.env.NEXT_PUBLIC_SERVER_HOST}/user/me/`, {
                method: 'get',
@@ -37,7 +38,6 @@ export default async (req, res) => {
                user: await res_user.json(),
             })
          }
-         console.log('server api expired')
          if (resAPI.status == 401) {
             const req_refresh = await fetch(`${process.env.NEXT_PUBLIC_SERVER_HOST}/token/refresh/`, {
                method: 'POST',
